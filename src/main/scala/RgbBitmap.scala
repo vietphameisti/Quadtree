@@ -1,6 +1,4 @@
 package Rgb
-import java.awt.Color
-import java.awt.image.BufferedImage
 
 //object RgbBitmap {
 //  private val img0= new RgbBitmap(50,60)
@@ -60,8 +58,8 @@ import java.awt.image.BufferedImage
 //  assert(img0.width==50)
 //  assert(img0.height==60)
 //}
-import java.awt.image.BufferedImage
 import java.awt.Color
+import java.awt.image.BufferedImage
 
 class RgbBitmap(val width:Int, val height:Int) {
   val image=new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
@@ -73,5 +71,6 @@ class RgbBitmap(val width:Int, val height:Int) {
   }
 
   def setPixel(x:Int, y:Int, c:Color)=image.setRGB(x, y, c.getRGB())
+  //getRGB(int x, int y) return you the value of color pixel at location (x,y)
   def getPixel(x:Int, y:Int)=new Color(image.getRGB(x, y))
 }
