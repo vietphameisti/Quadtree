@@ -1,10 +1,11 @@
+package Pix
+
 import java.io._
 
 import Bitmap.BitmapOps
 import Rgb.RgbBitmap
-import javax.swing.ImageIcon
+import scala.swing.Color
 
-import scala.swing.{Color, _}
 object Pixmap {
 
   private case class PpmHeader(format: String, width: Int, height: Int, maxColor: Int)
@@ -12,7 +13,7 @@ object Pixmap {
   def load(filename: String): Option[RgbBitmap] = {
     implicit val in = new BufferedInputStream(new FileInputStream(filename))
     val header = readHeader
-    if (header.format == "p6") {
+    if (header.format == "P6") {
       val bm = new RgbBitmap(header.width, header.height);
       for (y <- 0 until bm.height; x <- 0 until bm.width; c = readColor)
         bm.setPixel(x, y, c)
@@ -55,17 +56,4 @@ object Pixmap {
     }
     out
   }
-
-    def main(args: Array[String]): Unit = {
-      val img = Pixmap.load("C:\\Users\\Administrator\\IdeaProjects\\Quadtree\\src\\main\\Images\\sign_1.ppm").get
-      val grayImg = BitmapOps.grayscale(img);
-      Pixmap.save(grayImg, "/image_gray.ppm")
-      val mainframe = new MainFrame() {
-        title = "Test"
-        visible = true
-        contents = new Label() {
-          icon = new ImageIcon(grayImg.image)
-        }
-      }
-    }
 }
