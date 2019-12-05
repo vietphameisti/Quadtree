@@ -1,17 +1,16 @@
-import scala.swing._
-import javax.swing.ImageIcon
-
+/** Contains the main function. */
 object Launcher {
-
     def main(args: Array[String]): Unit = {
-      val img = Pix.Pixmap.load("src/main/Images/sign_1.ppm").get
 
-      val mainframe = new MainFrame() {
-        title = "Test"
-        visible = true
-        contents = new Label() {
-          icon = new ImageIcon(img.image)
-        }
-      }
+      // load image and display it
+      val img = Rgb.BitmapLoader.load("src/main/Images/synth_1.ppm").get
+      img.show
+
+      // recursively build the quadtree
+      val quadtree = new Quadtree(img)
+      quadtree.show("")
+
+      println("finished")
+
     }
 }

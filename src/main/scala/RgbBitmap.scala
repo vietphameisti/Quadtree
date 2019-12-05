@@ -3,16 +3,43 @@ package Rgb
 import java.awt.Color
 import java.awt.image.BufferedImage
 
-class RgbBitmap(val width:Int, val height:Int) {
-  val image=new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
+import scala.swing._
+import javax.swing.ImageIcon
 
-  def fill(c:Color)={
-    val g=image.getGraphics()
-    g.setColor(c)
-    g.fillRect(0, 0, width, height)
-  }
+/** Matrix of RGB pixels. Stores an image.
+ *
+ *  @constructor create a new RGB matrix
+ *  @param values matrix of Colors
+ */
+class RgbBitmap(values: List[List[Color]]) {
+    var matrix = values
+    val width = values(0).size
+    val height = values.size
 
-  def setPixel(x:Int, y:Int, c:Color)=image.setRGB(x, y, c.getRGB())
-  //getRGB(int x, int y) return you the value of color pixel at location (x,y)
-  def getPixel(x:Int, y:Int)=new Color(image.getRGB(x, y))
+    /** Second constructor using a flattened list */
+    def this(values: List[Color], width: Int) {
+        this(values.grouped(width).toList.transpose)
+    }
+
+    /** Display the image in a window */
+    def show()={
+        val image=new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
+
+        for (y <- 0 until height; x <- 0 until width)
+            image.setRGB(x, y, matrix(x)(y).getRGB())
+
+        val mainframe = new MainFrame() {
+            title = "Test"
+            visible = true
+            contents = new Label() {
+                icon = new ImageIcon(image)
+            }
+        }
+    }
+
+    /** Check if all the nodes have the same color */
+    def hasSameColor()= {
+        matrix.flatten.distinct.length == 1
+    }
+
 }
