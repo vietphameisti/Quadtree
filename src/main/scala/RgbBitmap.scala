@@ -13,8 +13,8 @@ import javax.swing.ImageIcon
  */
 class RgbBitmap(values: List[List[Color]]) {
     var matrix = values
-    val width = values(0).size
-    val height = values.size
+    val width = values.size
+    val height = values(0).size
 
     /** Second constructor using a flattened list */
     def this(values: List[Color], width: Int) {
@@ -22,14 +22,14 @@ class RgbBitmap(values: List[List[Color]]) {
     }
 
     /** Display the image in a window */
-    def show()={
+    def show(tit: String)={
         val image=new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
 
         for (y <- 0 until height; x <- 0 until width)
             image.setRGB(x, y, matrix(x)(y).getRGB())
 
         val mainframe = new MainFrame() {
-            title = "Test"
+            title = tit
             visible = true
             contents = new Label() {
                 icon = new ImageIcon(image)
@@ -40,6 +40,10 @@ class RgbBitmap(values: List[List[Color]]) {
     /** Check if all the nodes have the same color */
     def hasSameColor()= {
         matrix.flatten.distinct.length == 1
+    }
+
+    def shape() = {
+        println("width " + width + " x height " + height)
     }
 
 }
