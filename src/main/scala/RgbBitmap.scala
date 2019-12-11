@@ -21,6 +21,15 @@ class RgbBitmap(values: List[List[Color]]) {
         this(values.grouped(width).toList.transpose)
     }
 
+    /** Check if all the nodes have the same color */
+    def hasSameColor()= {
+        matrix.flatten.distinct.length == 1
+    }
+
+    /*************************************
+     *         OPERATIONS                *
+     *************************************/
+
     /** Display the image in a window */
     def show(tit: String)={
         val image=new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
@@ -37,13 +46,19 @@ class RgbBitmap(values: List[List[Color]]) {
         }
     }
 
-    /** Check if all the nodes have the same color */
-    def hasSameColor()= {
-        matrix.flatten.distinct.length == 1
+    /** Mirroring Left-Right */
+    def mirrorLR()=new Rgb.RgbBitmap(matrix.reverse) // reverse rows
+
+    /** Mirroring Top-Bottom */
+    def mirrorTB()=new Rgb.RgbBitmap(matrix.map(_.reverse)) // revers each column
+
+    /** Invert */
+    def invert()=new Rgb.RgbBitmap(matrix.flatten.map(invertColor).grouped(width).toList) // invert each color
+
+    private def invertColor(x:Color): Color={
+        new Color(255-x.getRed(), 255-x.getGreen(), 255-x.getBlue())
     }
 
-    def shape() = {
-        println("width " + width + " x height " + height)
-    }
-
+    /** Rotate */
+    def rotate() = new Rgb.RgbBitmap(matrix.transpose.map(_.reverse)) // transpose and invert rows
 }
