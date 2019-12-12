@@ -13,24 +13,24 @@ object Launcher {
       quadtree.show("")
 
       // build image from quadtree
-      quadtree.toBitmap(1000).show("Reconstructed From Quadtree")
+      quadtree.toBitmap().show("Reconstructed From Quadtree")
 
       // build compressed image from quadtree
-      quadtree.toBitmap(5).show("Compressed")
+      val compressed = quadtree.compress(5)
+      compressed.show("Compressed")
 
       // save image
-      // TODO
+      Rgb.BitmapLoader.save(compressed, "saved.ppm")
 
-      // transpose image
-      val img2 = new Rgb.RgbBitmap(img.matrix.transpose.transpose.map(x=>x.reverse))
-      img2.show("Mirrored")
+      // Mirror image
+      img.mirrorLR.show("Mirrored LR")
+      img.mirrorTB.show("Mirrored TB")
 
-      // transpose image
-      val img3 = new Rgb.RgbBitmap(img.matrix.flatten.map(x => new Color(255-x.getRed(), 255-x.getGreen(), 255-x.getBlue())).grouped(img.width).toList)
-      img3.show("Inverted")
+      // Invert colors in image
+      img.invert.show("Inverted")
 
-      val img4 = new Rgb.RgbBitmap(img.matrix.transpose.map(x=>x.reverse))
-      img4.show("90 deg rotation")
+      // Rotate 90 degrees
+      img.rotate.show("90 deg rotation")
 
       println("finished")
 

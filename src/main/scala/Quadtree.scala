@@ -15,26 +15,40 @@ class Quadtree(val img: RgbBitmap) {
     var height: Int = img.height
     var children: ListBuffer[Quadtree] = new ListBuffer[Quadtree]()
 
-    //println("Node created " + img.width + " " + img.height)
+    /**********************************************
+     *             CONSTRUCTOR                    *
+     **********************************************/
 
-    if(img.hasSameColor || (img.height * img.width) < 1) {
+    /* If the image has the same color stop */
+    if(img.hasSameColor) {
         color = img.matrix(0)(0)
     } else {
-        // split into 4 sub-images
+        /* Else divide in 4 */
         val subImgs = splitImg(img)
-
-        // add children to the list
         subImgs.foreach( x => {
-            children += new Quadtree(x)
+            children += new Quadtree(x)  // Add children
         })
 
-        if (subImgs.size != 2 && subImgs.size != 4)
-            System.exit(-1*subImgs.size)
-
-        // Take the mean color of the children
-        val sum = children.map(_.color).map(x => List(x.getRed(), x.getGreen(), x.getBlue())).reduceLeft((x,y) => {x.zip(y).map(a => a._1 + a._2)})
-        color = new Color(sum(0)/children.size, sum(1)/children.size, sum(2)/children.size)
+        /* Take the mean color of the children */
+        val colorsum = children.map(_.color).map(colorToList).reduceLeft((x,y) => sumColors(x,y))
+        val colormean = colorsum.map(_/children.size)
+        color = new Color(colormean(0), colormean(1), colormean(2))
     }
+
+    /** Sum 2 colors component by component */
+    private def sumColors(x: List[Int],y: List[Int]) = x.zip(y).map(a => a._1 + a._2)
+
+    /** Convert Color to list of Integers */
+    private def colorToList(x: Color): List[Int] = List(x.getRed(), x.getGreen(), x.getBlue())
+
+    /** Split an image into 4 sub images */
+    private def splitImg(img: RgbBitmap): List[RgbBitmap] = {
+        img.matrix.map(_.grouped((img.height+1)/2).toList).grouped((img.width+1)/2).map(_.transpose).reduce(_ ++ _).map(new RgbBitmap(_))
+    }
+
+    /**********************************************
+     *               Functions                    *
+     **********************************************/
 
     /** Is this node a leaf? */
     def isLeaf()= children.isEmpty
@@ -45,17 +59,15 @@ class Quadtree(val img: RgbBitmap) {
         children.foreach(_.show(prefix + "  |"))
     }
 
-    /** Split an image into 4 sub images */
-    private def splitImg(img: RgbBitmap): List[RgbBitmap] = {
-        img.matrix.map(_.grouped((img.height+1)/2).toList).grouped((img.width+1)/2).map(_.transpose).reduce(_ ++ _).map(new RgbBitmap(_))
-    }
+    /** alias for the toBitmap function */
+    def compress(maxDepth: Int) = toBitmap(maxDepth)
 
     /** convert quadtree to image */
     //@annotation.tailrec
-    final def toBitmap(depth: Int): RgbBitmap = {
+    def toBitmap(depth: Int = -1): RgbBitmap = {
 
         // If it's a leaf or we reached the wanted detail, return the color
-        if(this.isLeaf  || depth <= 0){
+        if(this.isLeaf  || depth == 0){
             val mat = List.fill(width*height)(color).grouped(width).toList.transpose
             return new RgbBitmap(mat)
         }
