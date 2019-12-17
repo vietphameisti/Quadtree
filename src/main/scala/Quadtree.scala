@@ -54,7 +54,7 @@ class Quadtree(val img: RgbBitmap) {
     def isLeaf()= children.isEmpty
 
     /** Print name of the Node and subnodes in a tree */
-    def show(prefix: String) {
+    def show(prefix: String):Unit= {
         println(prefix + "_ " + width + "x" + height)
         children.foreach(_.show(prefix + "  |"))
     }

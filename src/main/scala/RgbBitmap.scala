@@ -45,12 +45,18 @@ class RgbBitmap(values: List[List[Color]]) {
             }
         }
     }
+  def showImageViewer(rgbImage:RgbBitmap):BufferedImage={
+    val image=new BufferedImage(rgbImage.width,rgbImage.height, BufferedImage.TYPE_3BYTE_BGR)
+    for (y <- 0 until height; x <- 0 until width)
+      image.setRGB(x, y, rgbImage.matrix(x)(y).getRGB())
+    image
+  }
 
     /** Mirroring Left-Right */
     def mirrorLR()=new Rgb.RgbBitmap(matrix.reverse) // reverse rows
 
     /** Mirroring Top-Bottom */
-    def mirrorTB()=new Rgb.RgbBitmap(matrix.map(_.reverse)) // revers each column
+        def mirrorTB()=new Rgb.RgbBitmap(matrix.map(_.reverse)) // revers each column
 
     /** Invert */
     def invert()=new Rgb.RgbBitmap(matrix.flatten.map(invertColor).grouped(width).toList) // invert each color
