@@ -56,10 +56,10 @@ class RgbBitmap(values: List[List[Color]]) {
     def mirrorLR()=new Rgb.RgbBitmap(matrix.reverse) // reverse rows
 
     /** Mirroring Top-Bottom */
-        def mirrorTB()=new Rgb.RgbBitmap(matrix.map(_.reverse)) // revers each column
+    def mirrorTB()=new Rgb.RgbBitmap(matrix.map(_.reverse)) // revers each column
 
     /** Invert */
-    def invert()=new Rgb.RgbBitmap(matrix.flatten.map(invertColor).grouped(width).toList) // invert each color
+    def invert()=new Rgb.RgbBitmap(matrix.flatten.map(invertColor).grouped(height).toList) // invert each color
 
     private def invertColor(x:Color): Color={
         new Color(255-x.getRed(), 255-x.getGreen(), 255-x.getBlue())

@@ -7,9 +7,10 @@ import Rgb.RgbBitmap
 /** Node of a quadtree. Each node represents a quadrant.
  *
  *  @constructor create a quadtree starting from an image
- *  @param img the imgto start from
+ *  @param img      the img to start from
+ *  @param depth    the depth of this node in the quadtree. If not specified, it's 0.
  */
-class Quadtree(val img: RgbBitmap) {
+class Quadtree(val img: RgbBitmap, val depth: Int = 0) {
     var color: Color = new Color(0,0,0)
     var width: Int = img.width
     var height: Int = img.height
@@ -26,7 +27,7 @@ class Quadtree(val img: RgbBitmap) {
         /* Else divide in 4 */
         val subImgs = splitImg(img)
         subImgs.foreach( x => {
-            children += new Quadtree(x)  // Add children
+            children += new Quadtree(x, depth+1)  // Add children
         })
 
         /* Take the mean color of the children */
@@ -53,31 +54,54 @@ class Quadtree(val img: RgbBitmap) {
     /** Is this node a leaf? */
     def isLeaf()= children.isEmpty
 
-    /** Print name of the Node and subnodes in a tree */
-    def show(prefix: String):Unit= {
-        println(prefix + "_ " + width + "x" + height)
-        children.foreach(_.show(prefix + "  |"))
+    /**
+     * Print the quadtree as a String.
+     */
+    def print(prefix: String, builder: StringBuilder): Unit = {
+        builder ++= prefix + "_ Dimension: " + width + "x" + height
+        builder ++= ", Color:[r="+ color.getRed + ", g=" + color.getGreen + ", b=" + color.getBlue +"]\n"
+        children.foreach(_.print(prefix + "   |", builder))
     }
 
-    /** alias for the toBitmap function */
-    def compress(maxDepth: Int) = toBitmap(maxDepth)
+    /**
+     * Compress the image (a.k.a cut the quadtree's leaves)
+     */
+    def compress(maxDepth: Int): Unit = {
+        if(depth >= maxDepth || this.isLeaf)
+            children = new ListBuffer[Quadtree]()
+        else
+            children.foreach( x => x.compress(maxDepth))
+    }
 
-    /** convert quadtree to image */
-    //@annotation.tailrec
-    def toBitmap(depth: Int = -1): RgbBitmap = {
+    /**
+     * Get maximum depth of the quadtree
+     */
+    def getMaxDepth(): Int = {
+        if(this.isLeaf)
+            return depth
+        else
+            return children.map(_.getMaxDepth).max
+    }
 
-        // If it's a leaf or we reached the wanted detail, return the color
-        if(this.isLeaf  || depth == 0){
+    /**
+     * Convert the quadtree to an RgbBitmap
+     *
+     * @return a bitmap reconstructed from the quadtree
+     */
+    def toBitmap(): RgbBitmap = {
+
+        // If this node is a leaf, return a matrix filled with the same color
+        if(this.isLeaf) {
             val mat = List.fill(width*height)(color).grouped(width).toList.transpose
             return new RgbBitmap(mat)
         }
 
-        // Else...
+        // Else compose the images coming from each child
         else {
             // recursively get the children's bitmap
-            val submaps: List[List[List[Color]]] = children.map(_.toBitmap(depth - 1).matrix).toList
+            val submaps: List[List[List[Color]]] = children.map(_.toBitmap.matrix).toList
 
-            /* Case 4 children
+            /* Case 4 children: compose the 4 subimages
              *  +---+---+
              *  | 0 | 1 |
              *  +---+---+
@@ -89,10 +113,11 @@ class Quadtree(val img: RgbBitmap) {
                 val img = (submaps(0), submaps(1)).zipped.map(_ ++ _) ::: (submaps(2), submaps(3)).zipped.map(_ ++ _)
                 return new RgbBitmap(img);
             }
+
             // Case 2 Children
             else {
 
-                /* Vertical
+                /* Compose the two childs vertically
                  *  +---+
                  *  | 0 |
                  *  +---+
@@ -104,7 +129,7 @@ class Quadtree(val img: RgbBitmap) {
                     return new RgbBitmap(img);
                 }
 
-                /* Horizontal
+                /* Compose the two childs horizontally
                  *  +---+---+
                  *  | 0 | 1 |
                  *  +---+---+
