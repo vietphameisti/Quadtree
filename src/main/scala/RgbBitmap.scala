@@ -27,30 +27,8 @@ class RgbBitmap(values: List[List[Color]]) {
     }
 
     /*************************************
-     *         OPERATIONS                *
+     *         MANIPULATION              *
      *************************************/
-
-    /** Display the image in a window */
-    def show(tit: String)={
-        val image=new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
-
-        for (y <- 0 until height; x <- 0 until width)
-            image.setRGB(x, y, matrix(x)(y).getRGB())
-
-        val mainframe = new MainFrame() {
-            title = tit
-            visible = true
-            contents = new Label() {
-                icon = new ImageIcon(image)
-            }
-        }
-    }
-  def showImageViewer(rgbImage:RgbBitmap):BufferedImage={
-    val image=new BufferedImage(rgbImage.width,rgbImage.height, BufferedImage.TYPE_3BYTE_BGR)
-    for (y <- 0 until height; x <- 0 until width)
-      image.setRGB(x, y, rgbImage.matrix(x)(y).getRGB())
-    image
-  }
 
     /** Mirroring Left-Right */
     def mirrorLR()=new Rgb.RgbBitmap(matrix.reverse) // reverse rows
@@ -67,4 +45,33 @@ class RgbBitmap(values: List[List[Color]]) {
 
     /** Rotate */
     def rotate() = new Rgb.RgbBitmap(matrix.transpose.map(_.reverse)) // transpose and invert rows
+
+    /*************************************
+     *         DISPLAYING                *
+     *************************************/
+
+    /** Display the image in a separate window */
+    def show(tit: String)={
+        val image=new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR)
+
+        for (y <- 0 until height; x <- 0 until width)
+            image.setRGB(x, y, matrix(x)(y).getRGB())
+
+        val mainframe = new MainFrame() {
+            title = tit
+            visible = true
+            contents = new Label() {
+                icon = new ImageIcon(image)
+            }
+        }
+    }
+
+    /** Display the image as a BufferedImage */
+    def showImageViewer(rgbImage:RgbBitmap):BufferedImage={
+        val image=new BufferedImage(rgbImage.width,rgbImage.height, BufferedImage.TYPE_3BYTE_BGR)
+        for (y <- 0 until height; x <- 0 until width)
+          image.setRGB(x, y, rgbImage.matrix(x)(y).getRGB())
+
+        image
+    }
 }
