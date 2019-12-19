@@ -1,5 +1,4 @@
 <div style='text-align: center'> <h1>Scala Final Project</h1> <i>Course:</i> Functional Programming with SCALA, ADEO-M2 2019 <br/><i>Authors:</i> Alvise de' Faveri Tron, Quoc Viet Pham</div>
-
 ## Project Overview
 
 In this project we realized a GUI for manipulating *.ppm* images using **Quadtrees**.  A quadtree is a tree in which each node represents a partition of the image. Starting from the initial image, if all the pixels in the image have the same color the quadtree stores the color of that image, else four *children* (quadtrees) are constructed dividing the image in 4 even partitions. This division is applied recursively until we end up with nodes containing only pixels of the same color.
@@ -14,6 +13,40 @@ The program we realized is capable of the following functions:
 
 All functions can be applied to both square and rectangular images.
 
+### PPM Format
+
+PPM - Stands for Portable Pixel Map, images contain two important things:
+
+* Header
+* Group of pixels, each pixel has three values RGB (red, green, and blue)
+
+#### Header
+
+This is an example of a header:
+
+|                  PPM file                   |                    Image                    |
+| :-----------------------------------------: | :-----------------------------------------: |
+| <img src="ppm1.png" style="height:250px" /> | <img src="ppm2.png" style="height:200px" /> |
+
+**P6**: tells the computer it is a ppm file
+**2**: tells the computer the width (columns) of the image is 2 pixels
+**3:** tells the computer the height (rows) of the image is 3 pixels
+**255**: tells the computer the maximum color value (this is always 255)
+
+#### Pixel Representation
+
+Let's take a sample image: each set of three represents a pixel, with the bytes in this order:
+
+|                    Image                    |                  Encoding                   |
+| :-----------------------------------------: | :-----------------------------------------: |
+| <img src="ppm3.png" style="height:150px" /> | Amount **red** (0-255)<br/>Amount **green**(0-255)<br/>Amount **blue** (0-255) |
+
+For example:
+
+| First pixel | Second Pixel |
+|:-----:|:--------:|
+| <img src="ppm4.png" style="height:250px" /> | <img src="ppm5.png" style="height:250px" /> |
+
 ## Image Representation and Manipulation
 
 The image representation can be found in **RgbBitmap.scala**. This class stores an image in the form of a `List[List[java.awt.Color]]` and can be initialized either using a matrix or a flattened matrix (`List[Color`]).
@@ -23,6 +56,8 @@ Once initialized, an RgbBitmap can be manipulated as follows:
 *  **rotate**: rotates the image 90° counter-clockwise by transposing the matrix and then inverting each row.
 * **invert**: inverts the color of the image by creating a new image in which each pixel's RGB component is calculated as 255(white)-initial value.
 * **mirroring**: inverts the pixel order of each row (LR) or each column (TB).
+
+### PPM handling
 
 Loading and saving *.ppm* images is enabled by the **BitmapLoader.scala** object, which can generate a RgbBitmap from a *.ppm* file or save an RgbBitmap in a file using the same format. Extensions different from *.ppm* are not supported.
 
@@ -72,7 +107,7 @@ The main window is divided in 3 columns:
 * middle: image manipulation
 * right: quadtree display
 
-The quadtree is represented graphically with a tree-like string which describes the dimension and color stored in each node. Whenever the *display tree* button is pressed, the textarea on the left will contain the tree structure of the manipulated image displayed on the center-bottom panel.
+The quadtree is represented graphically with a tree-like string which describes the dimension and color stored in each node. Whenever the *display tree* button is pressed, the textarea on the right will contain the tree structure of the manipulated image displayed on the center-bottom panel.
 
 **NOTE: printing the whole quadtree for big images might take a while. We suggest to compress the image before displying the tree structure.**
 
